@@ -141,7 +141,7 @@ em { font-style: normal; }
 /* бургер (только мобильный) */
 .nav-toggle {
   display: none; flex-direction: column; justify-content: center; gap: 5px;
-  width: 42px; height: 42px; padding: 0 9px; flex-shrink: 0;
+  width: 44px; height: 44px; padding: 0 10px; flex-shrink: 0;
   background: transparent; border: 1px solid var(--line); border-radius: var(--radius);
   cursor: pointer;
 }
@@ -511,6 +511,27 @@ body.locked { overflow: hidden; }
   .card__foot { flex-direction: column; align-items: stretch; gap: .55rem; padding-top: .6rem; }
   .card__add { width: 100%; padding: .6rem; }
   .card__tag { font-size: .58rem; }
+
+  /* ---- ЛИПКАЯ ПАНЕЛЬ ФИЛЬТРОВ ---- */
+  .catalog__head { margin-bottom: 1rem; }
+  .filters {
+    position: sticky; top: 71px; z-index: 40;
+    margin: .2rem calc(-1 * clamp(1rem, 4vw, 2.5rem)) 0;
+    padding: .65rem clamp(1rem, 4vw, 2.5rem);
+    background: rgba(13, 12, 11, .95); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+    flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+
+  /* ---- ТАЧ-ТАРГЕТЫ >= 44px ---- */
+  .chip { min-height: 44px; padding: .7rem 1rem; white-space: nowrap; }
+  .size { min-height: 44px; }
+  .card__add { min-height: 44px; }
+  .modal__close { width: 44px; height: 44px; }
+  .cart-item__qty button { width: 2.4rem; height: 2.2rem; font-size: 1.15rem; }
+  .cart-item__remove { padding: .35rem 0; }
 
   /* ---- МОДАЛКИ / ФОРМА ---- */
   .product-view { grid-template-columns: 1fr; }

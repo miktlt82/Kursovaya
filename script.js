@@ -370,6 +370,26 @@ if (navToggle && primaryNav) {
 }
 
 /* ============================================================
+   СВАЙП ВПРАВО ЗАКРЫВАЕТ КОРЗИНУ (тач)
+   ============================================================ */
+(function () {
+  const panel = $('#cartDrawer .drawer__panel');
+  if (!panel) return;
+  let x0 = null, y0 = null, t0 = 0;
+  panel.addEventListener('touchstart', e => {
+    const t = e.changedTouches[0]; x0 = t.clientX; y0 = t.clientY; t0 = Date.now();
+  }, { passive: true });
+  panel.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - x0, dy = t.clientY - y0, dt = Date.now() - t0;
+    // быстрый горизонтальный свайп вправо
+    if (dx > 60 && Math.abs(dx) > Math.abs(dy) * 1.5 && dt < 600) closeOverlay(cartDrawer);
+    x0 = y0 = null;
+  }, { passive: true });
+})();
+
+/* ============================================================
    ОФОРМЛЕНИЕ ЗАКАЗА
    ============================================================ */
 const checkoutModal = $('#checkoutModal');
