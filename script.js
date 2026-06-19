@@ -350,6 +350,26 @@ function updateCartUI(bump) {
 $('#cartOpen').addEventListener('click', () => openOverlay(cartDrawer));
 
 /* ============================================================
+   МОБИЛЬНОЕ МЕНЮ (бургер)
+   ============================================================ */
+const navToggle = $('#navToggle');
+const primaryNav = $('#primaryNav');
+function closeNav() {
+  primaryNav.classList.remove('is-open');
+  navToggle.setAttribute('aria-expanded', 'false');
+}
+if (navToggle && primaryNav) {
+  navToggle.addEventListener('click', () => {
+    const open = primaryNav.classList.toggle('is-open');
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  // закрыть после выбора пункта
+  primaryNav.addEventListener('click', e => { if (e.target.closest('a')) closeNav(); });
+  // закрыть, если ушли на десктопную ширину
+  matchMedia('(min-width: 721px)').addEventListener('change', e => { if (e.matches) closeNav(); });
+}
+
+/* ============================================================
    ОФОРМЛЕНИЕ ЗАКАЗА
    ============================================================ */
 const checkoutModal = $('#checkoutModal');

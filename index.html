@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/jpeg" href="images/logo.jpg" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2" />
 </head>
 <body>
   <!-- АНИМИРОВАННЫЙ ФОН: дрейфующие полосы (CSS) + частицы-ноты/кресты (canvas) -->
@@ -30,15 +30,19 @@
       <span class="brand__name">RAMM<em>PROJECT</em></span>
     </a>
 
-    <nav class="nav" aria-label="Основная навигация">
+    <nav class="nav" id="primaryNav" aria-label="Основная навигация">
       <a href="#catalog">Магазин</a>
       <a href="#info">Доставка</a>
       <a href="#contacts">Контакты</a>
     </nav>
 
     <button class="cart-btn" id="cartOpen" aria-label="Открыть корзину">
-      <span>КОРЗИНА</span>
+      <span class="cart-btn__label">КОРЗИНА</span>
       <span class="cart-btn__count" id="cartCount">0</span>
+    </button>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Меню" aria-expanded="false" aria-controls="primaryNav">
+      <span></span><span></span><span></span>
     </button>
   </header>
 
@@ -236,6 +240,6 @@
   <!-- ТОСТ -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>
