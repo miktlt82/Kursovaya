@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAMMPROJECT — МАГАЗИН МЕРЧА</title>
+  <meta name="description" content="Официальный магазин мерча RAMMPROJECT — Rammstein tribute show. Футболки, майки и туровый мерч." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/jpeg" href="images/logo.jpg" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- АНИМИРОВАННЫЙ ФОН: дрейфующие полосы (CSS) + частицы-ноты/кресты (canvas) -->
+  <div class="bg-fx" aria-hidden="true">
+    <canvas id="bg-canvas"></canvas>
+  </div>
+
+  <!-- ШУМ / ЗЕРНО -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- ШАПКА -->
+  <header class="site-header" id="top">
+    <a href="#top" class="brand" aria-label="RAMMPROJECT — на главную">
+      <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+        <rect x="4" y="4" width="40" height="40" rx="3" fill="none" stroke="var(--paper)" stroke-width="3.5"/>
+        <path class="brand__cross" d="M21 13h6v8h8v6h-8v8h-6v-8h-8v-6h8z" fill="var(--accent)"/>
+      </svg>
+      <span class="brand__name">RAMM<em>PROJECT</em></span>
+    </a>
+
+    <nav class="nav" aria-label="Основная навигация">
+      <a href="#catalog">Магазин</a>
+      <a href="#info">Доставка</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+
+    <button class="cart-btn" id="cartOpen" aria-label="Открыть корзину">
+      <span>КОРЗИНА</span>
+      <span class="cart-btn__count" id="cartCount">0</span>
+    </button>
+  </header>
+
+  <!-- БЕГУЩАЯ СТРОКА -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker__track">
+      <span>RAMMSTEIN TRIBUTE SHOW ✦ ОФИЦИАЛЬНЫЙ МЕРЧ ✦ ОТГРУЗКА ПО ВСЕЙ СТРАНЕ ✦ ОГРАНИЧЕННЫЙ ТИРАЖ ✦ </span>
+      <span>RAMMSTEIN TRIBUTE SHOW ✦ ОФИЦИАЛЬНЫЙ МЕРЧ ✦ ОТГРУЗКА ПО ВСЕЙ СТРАНЕ ✦ ОГРАНИЧЕННЫЙ ТИРАЖ ✦ </span>
+    </div>
+  </div>
+
+  <!-- ГЕРОЙ -->
+  <section class="hero">
+    <p class="hero__kicker">RAMMPROJECT · MERCH STORE</p>
+    <h1 class="hero__title hero__title--logo">
+      <img src="images/logo.jpg" alt="RAMM PROJECT SHOP — Rammstein tribute show" />
+    </h1>
+    <p class="hero__lead">
+      Официальный мерч трибьют-шоу RAMMPROJECT. Печать ограниченным тиражом,
+      плотный хлопок, честные размеры. Без перепродаж — только тут.
+    </p>
+    <a href="#catalog" class="btn btn--primary hero__cta">К ТОВАРАМ ↓</a>
+
+    <ul class="hero__stats">
+      <li><b>240</b><span>гр/м² хлопок</span></li>
+      <li><b>5</b><span>дней отгрузка</span></li>
+      <li><b>100%</b><span>огня</span></li>
+    </ul>
+  </section>
+
+  <!-- КАТАЛОГ -->
+  <main>
+    <section class="catalog" id="catalog">
+      <div class="catalog__head">
+        <h2 class="section-title">ТОВАРЫ</h2>
+        <div class="filters" id="filters" role="tablist" aria-label="Фильтр по категориям">
+          <button class="chip is-active" data-cat="all" role="tab">ВСЁ</button>
+          <button class="chip" data-cat="tee" role="tab">ФУТБОЛКИ</button>
+          <button class="chip" data-cat="tank" role="tab">МАЙКИ</button>
+          <button class="chip" data-cat="tour" role="tab">ТУР</button>
+        </div>
+      </div>
+
+      <div class="grid" id="grid" aria-live="polite"><!-- товары рендерятся из script.js --></div>
+      <p class="grid__empty" id="gridEmpty" hidden>В этой категории пока пусто. Скоро завезём.</p>
+    </section>
+
+    <!-- ИНФО -->
+    <section class="info" id="info">
+      <div class="info__card">
+        <span class="info__num">01</span>
+        <h3>ДОСТАВКА</h3>
+        <p>СДЭК и Почта России по всей стране. Отгрузка 1–5 дней после оплаты. Трек присылаем на почту.</p>
+      </div>
+      <div class="info__card">
+        <span class="info__num">02</span>
+        <h3>ОПЛАТА</h3>
+        <p>Карта, СБП, наличными при получении в пунктах выдачи. Возврат — 14 дней, если не носил.</p>
+      </div>
+      <div class="info__card">
+        <span class="info__num">03</span>
+        <h3>РАЗМЕРЫ</h3>
+        <p>Футболки XXS–6XL, майки S–XXL. Таблица замеров открывается прямо в карточке товара.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ФУТЕР -->
+  <footer class="site-footer" id="contacts">
+    <div class="site-footer__big">RAMMPROJECT</div>
+    <div class="site-footer__cols">
+      <div>
+        <h4>МАГАЗИН</h4>
+        <a href="mailto:shop@rammproject.ru">shop@rammproject.ru</a>
+        <a href="tel:+79265732837">(926) 573-28-37</a>
+      </div>
+      <div>
+        <h4>ПО ДЕЛУ</h4>
+        <a href="mailto:booking@rammproject.ru">booking@rammproject.ru</a>
+        <a href="mailto:pr@rammproject.ru">pr@rammproject.ru</a>
+      </div>
+      <div>
+        <h4>МЫ ТУТ</h4>
+        <a href="#">VK</a>
+        <a href="#">YouTube</a>
+        <a href="#">TikTok</a>
+      </div>
+    </div>
+    <p class="site-footer__legal">© 2026 RAMMPROJECT — Rammstein tribute show. Демо-магазин, сделано для курсовой.</p>
+  </footer>
+
+  <!-- ===== МОДАЛКА ТОВАРА ===== -->
+  <div class="modal" id="productModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel product-view">
+      <button class="modal__close" data-close aria-label="Закрыть">✕</button>
+      <div class="product-view__media" id="pmMedia"></div>
+      <div class="product-view__body">
+        <p class="product-view__cat" id="pmCat"></p>
+        <h3 class="product-view__title" id="pmTitle"></h3>
+        <p class="product-view__price" id="pmPrice"></p>
+        <p class="product-view__desc" id="pmDesc"></p>
+
+        <div class="sizes" id="pmSizes" role="radiogroup" aria-label="Размер"></div>
+        <p class="sizes__error" id="pmSizeError" hidden>Выбери размер</p>
+
+        <details class="size-guide" id="pmGuide" hidden>
+          <summary>Таблица размеров</summary>
+          <img id="pmSizeChart" alt="Таблица размеров" loading="lazy" />
+        </details>
+
+        <button class="btn btn--primary product-view__add" id="pmAdd">В КОРЗИНУ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== КОРЗИНА ===== -->
+  <div class="drawer" id="cartDrawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Корзина">
+    <div class="drawer__backdrop" data-close></div>
+    <aside class="drawer__panel">
+      <div class="drawer__head">
+        <h3>КОРЗИНА</h3>
+        <button class="modal__close" data-close aria-label="Закрыть">✕</button>
+      </div>
+      <div class="drawer__items" id="cartItems"></div>
+      <p class="drawer__empty" id="cartEmpty">Пусто. Самое время это исправить.</p>
+      <div class="drawer__foot">
+        <div class="drawer__total">
+          <span>ИТОГО</span>
+          <b id="cartTotal">0 ₽</b>
+        </div>
+        <button class="btn btn--primary drawer__checkout" id="goCheckout" disabled>ОФОРМИТЬ ЗАКАЗ</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ===== ОФОРМЛЕНИЕ ===== -->
+  <div class="modal" id="checkoutModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coTitle">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel checkout">
+      <button class="modal__close" data-close aria-label="Закрыть">✕</button>
+      <h3 class="checkout__title" id="coTitle">ОФОРМЛЕНИЕ</h3>
+
+      <form class="checkout__form" id="checkoutForm" novalidate>
+        <div class="field">
+          <label for="coName">Имя и фамилия</label>
+          <input id="coName" name="name" type="text" autocomplete="name" required />
+          <small class="field__err"></small>
+        </div>
+        <div class="field">
+          <label for="coPhone">Телефон</label>
+          <input id="coPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" required />
+          <small class="field__err"></small>
+        </div>
+        <div class="field">
+          <label for="coEmail">E-mail</label>
+          <input id="coEmail" name="email" type="email" autocomplete="email" required />
+          <small class="field__err"></small>
+        </div>
+        <div class="field">
+          <label for="coCity">Город</label>
+          <input id="coCity" name="city" type="text" autocomplete="address-level2" required />
+          <small class="field__err"></small>
+        </div>
+        <div class="field field--wide">
+          <label for="coAddr">Адрес / пункт выдачи</label>
+          <input id="coAddr" name="address" type="text" autocomplete="street-address" required />
+          <small class="field__err"></small>
+        </div>
+        <div class="field field--wide">
+          <label for="coComment">Комментарий <span>(необязательно)</span></label>
+          <textarea id="coComment" name="comment" rows="2"></textarea>
+        </div>
+
+        <div class="checkout__summary">
+          <span>К оплате</span>
+          <b id="coTotal">0 ₽</b>
+        </div>
+
+        <button type="submit" class="btn btn--primary checkout__submit">ПОДТВЕРДИТЬ ЗАКАЗ</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== УСПЕХ ===== -->
+  <div class="modal" id="successModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel success">
+      <button class="modal__close" data-close aria-label="Закрыть">✕</button>
+      <div class="success__stamp">ПРИНЯТО</div>
+      <h3 id="successTitle">ЗАКАЗ <span id="orderNo"></span> ОФОРМЛЕН</h3>
+      <p>Спасибо! Мы написали тебе на почту. Уже пакуем твою коробку.</p>
+      <button class="btn btn--primary" data-close>ОК, КРУТО</button>
+    </div>
+  </div>
+
+  <!-- ТОСТ -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
