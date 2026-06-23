@@ -1,0 +1,15 @@
+{
+  "name": "rammproject-shop",
+  "version": "1.0.0",
+  "description": "RAMMPROJECT SHOP — магазин мерча (курсовая). Node.js + Express + SQLite.",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2"
+  }
+}

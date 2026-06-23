@@ -10,94 +10,14 @@ const CATEGORY_LABELS = {
   tour: 'Тур-мерч',
 };
 
-const TEE_SIZES  = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'];
-const TANK_SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
-
 // таблица размеров, которая показывается в карточке товара
 const SIZE_CHARTS = {
   tee:  'images/size-tee.jpg',
   tank: 'images/size-tank.jpg',
 };
 
-const PRODUCTS = [
-  {
-    id: 'tee-folk',
-    cat: 'tee',
-    name: 'RAMM ПРОЕКТ · ФОЛК',
-    price: 2490,
-    desc: 'Чёрная футболка с фирменным логотипом в стиле вышиванки. Красный орнамент, шелкография, плотный хлопок 240 гр/м².',
-    img: 'images/tee-folk.jpg',
-    sizes: TEE_SIZES, sizeChart: 'tee',
-    soldOut: ['XXS'],
-    tag: 'ХИТ',
-  },
-  {
-    id: 'tank-nakazyvat',
-    cat: 'tank',
-    name: 'НАКАЗЫВАТЬ',
-    price: 2290,
-    desc: 'Безрукавка из серии «Мерч для слэма». Принт с маской и надписью «Готовься, я буду наказывать». Винтажная стирка.',
-    img: 'images/tank-nakazyvat.jpg',
-    sizes: TANK_SIZES, sizeChart: 'tank',
-    soldOut: [],
-    tag: 'СЛЭМ',
-  },
-  {
-    id: 'tank-butterfly',
-    cat: 'tank',
-    name: 'ПОРХАЙ КАК БАБОЧКА',
-    price: 2290,
-    desc: 'Безрукавка «Мерч для слэма» с гитаристом. Для тех, кто живёт в первом ряду и пите.',
-    img: 'images/tank-butterfly.jpg',
-    sizes: TANK_SIZES, sizeChart: 'tank',
-    soldOut: ['XXL'],
-    tag: 'СЛЭМ',
-  },
-  {
-    id: 'tank-able',
-    cat: 'tank',
-    name: 'И ЭТО ВСЁ?',
-    price: 2290,
-    desc: 'Безрукавка «Мерч для слэма»: «И это всё, на что ты способен?». Вызов для танцпола.',
-    img: 'images/tank-able.jpg',
-    sizes: TANK_SIZES, sizeChart: 'tank',
-    soldOut: ['S'],
-    tag: 'СЛЭМ',
-  },
-  {
-    id: 'tour-vladimir',
-    cat: 'tour',
-    name: 'ТУР · VLADIMIR',
-    price: 2690,
-    desc: 'Туровая футболка RAMMSTEIN TRIBUTE SHOW. Оранжевый принт-треугольник, всадник, город Владимир.',
-    img: 'images/tour-vladimir.jpg',
-    sizes: TEE_SIZES, sizeChart: 'tee',
-    soldOut: [],
-    tag: 'ЛИМИТ',
-  },
-  {
-    id: 'tour-spb',
-    cat: 'tour',
-    name: 'ТУР · ST. PETERSBURG',
-    price: 2690,
-    desc: 'Туровая футболка трибьют-шоу. Синий принт с Медным всадником, город Санкт-Петербург.',
-    img: 'images/tour-spb.jpg',
-    sizes: TEE_SIZES, sizeChart: 'tee',
-    soldOut: ['XXS', '6XL'],
-    tag: 'ЛИМИТ',
-  },
-  {
-    id: 'tour-orel',
-    cat: 'tour',
-    name: 'ТУР · OREL',
-    price: 2690,
-    desc: 'Туровая футболка трибьют-шоу. Красный принт-треугольник, город Орёл.',
-    img: 'images/tour-orel.jpg',
-    sizes: TEE_SIZES, sizeChart: 'tee',
-    soldOut: [],
-    tag: 'ЛИМИТ',
-  },
-];
+// каталог загружается с сервера: GET /api/products (см. init() в конце файла)
+let PRODUCTS = [];
 
 /* ---------- КАРТИНКА ТОВАРА (реальное фото) ---------- */
 function productArt(p) {
@@ -432,7 +352,7 @@ form.addEventListener('input', e => {
   if (e.target.name in VALIDATORS) validateField(e.target);
 });
 
-form.addEventListener('submit', e => {
+form.addEventListener('submit', async e => {
   e.preventDefault();
   let ok = true;
   Object.keys(VALIDATORS).forEach(name => {
@@ -444,16 +364,44 @@ form.addEventListener('submit', e => {
     return;
   }
 
-  // «отправка» заказа (демо)
-  const orderNo = '#' + String(1000 + Math.floor(performance.now()) % 9000);
-  $('#orderNo').textContent = orderNo;
+  // отправка заказа на сервер (POST /api/orders -> запись в БД)
+  const submitBtn = form.querySelector('.checkout__submit');
+  const prevText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'ОТПРАВЛЯЕМ…';
+  try {
+    const payload = {
+      customer: {
+        name:    form.elements.name.value,
+        phone:   form.elements.phone.value,
+        email:   form.elements.email.value,
+        city:    form.elements.city.value,
+        address: form.elements.address.value,
+        comment: form.elements.comment.value,
+      },
+      items: cart.map(i => ({ id: i.id, size: i.size, qty: i.qty })),
+    };
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
 
-  cart = [];
-  saveCart();
-  updateCartUI();
-  form.reset();
-  closeOverlay(checkoutModal);
-  openOverlay(successModal);
+    $('#orderNo').textContent = '#' + data.order_no;
+    cart = [];
+    saveCart();
+    updateCartUI();
+    form.reset();
+    closeOverlay(checkoutModal);
+    openOverlay(successModal);
+  } catch (err) {
+    toast('Не удалось оформить заказ. Попробуй ещё раз.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = prevText;
+  }
 });
 
 /* ============================================================
@@ -504,10 +452,21 @@ function toast(msg) {
 }
 
 /* ============================================================
-   СТАРТ
+   СТАРТ — загрузка каталога с сервера (GET /api/products)
    ============================================================ */
-renderGrid();
-updateCartUI();
+async function init() {
+  try {
+    const res = await fetch('/api/products');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    PRODUCTS = await res.json();
+  } catch (e) {
+    PRODUCTS = [];
+    gridEmpty.textContent = 'Не удалось загрузить каталог. Запусти сервер: npm start';
+  }
+  renderGrid();
+  updateCartUI();
+}
+init();
 
 /* ============================================================
    АНИМИРОВАННЫЙ ФОН (canvas: частицы — ноты + кресты + «дыхание» свечения)

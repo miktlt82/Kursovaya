@@ -1,3 +1,12 @@
+# зависимости
+node_modules/
+
+# база данных SQLite (создаётся из seed при первом запуске)
+shop.db
+shop.db-shm
+shop.db-wal
+
+# редактор/ОС
 .claude/
 Thumbs.db
 desktop.ini
