@@ -16,8 +16,65 @@ const SIZE_CHARTS = {
   tank: 'images/size-tank.jpg',
 };
 
-// каталог загружается с сервера: GET /api/products (см. init() в конце файла)
-let PRODUCTS = [];
+/* Статическая копия каталога нужна для демо на Vercel.
+   Локально, при запуске через npm start, данные по-прежнему читаются из SQLite. */
+const TEE_SIZES = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'];
+const TANK_SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
+
+const STATIC_PRODUCTS = [
+  {
+    id: 'tee-folk', cat: 'tee', name: 'RAMM ПРОЕКТ · ФОЛК', price: 2490,
+    img: 'images/tee-folk.jpg',
+    desc: 'Чёрная футболка с фирменным логотипом в стиле вышиванки. Красный орнамент, шелкография, плотный хлопок 240 гр/м².',
+    sizes: TEE_SIZES, soldOut: ['XXS'], sizeChart: 'tee', tag: 'ХИТ',
+  },
+  {
+    id: 'tank-nakazyvat', cat: 'tank', name: 'НАКАЗЫВАТЬ', price: 2290,
+    img: 'images/tank-nakazyvat.jpg',
+    desc: 'Безрукавка из серии «Мерч для слэма». Принт с маской и надписью «Готовься, я буду наказывать». Винтажная стирка.',
+    sizes: TANK_SIZES, soldOut: [], sizeChart: 'tank', tag: 'СЛЭМ',
+  },
+  {
+    id: 'tank-butterfly', cat: 'tank', name: 'ПОРХАЙ КАК БАБОЧКА', price: 2290,
+    img: 'images/tank-butterfly.jpg',
+    desc: 'Безрукавка «Мерч для слэма» с гитаристом. Для тех, кто живёт в первом ряду и пите.',
+    sizes: TANK_SIZES, soldOut: ['XXL'], sizeChart: 'tank', tag: 'СЛЭМ',
+  },
+  {
+    id: 'tank-able', cat: 'tank', name: 'И ЭТО ВСЁ?', price: 2290,
+    img: 'images/tank-able.jpg',
+    desc: 'Безрукавка «Мерч для слэма»: «И это всё, на что ты способен?». Вызов для танцпола.',
+    sizes: TANK_SIZES, soldOut: ['S'], sizeChart: 'tank', tag: 'СЛЭМ',
+  },
+  {
+    id: 'tour-vladimir', cat: 'tour', name: 'ТУР · VLADIMIR', price: 2690,
+    img: 'images/tour-vladimir.jpg',
+    desc: 'Туровая футболка RAMMSTEIN TRIBUTE SHOW. Оранжевый принт-треугольник, всадник, город Владимир.',
+    sizes: TEE_SIZES, soldOut: [], sizeChart: 'tee', tag: 'ЛИМИТ',
+  },
+  {
+    id: 'tour-spb', cat: 'tour', name: 'ТУР · ST. PETERSBURG', price: 2690,
+    img: 'images/tour-spb.jpg',
+    desc: 'Туровая футболка трибьют-шоу. Синий принт с Медным всадником, город Санкт-Петербург.',
+    sizes: TEE_SIZES, soldOut: ['XXS', '6XL'], sizeChart: 'tee', tag: 'ЛИМИТ',
+  },
+  {
+    id: 'tour-orel', cat: 'tour', name: 'ТУР · OREL', price: 2690,
+    img: 'images/tour-orel.jpg',
+    desc: 'Туровая футболка трибьют-шоу. Красный принт-треугольник, город Орёл.',
+    sizes: TEE_SIZES, soldOut: [], sizeChart: 'tee', tag: 'ЛИМИТ',
+  },
+];
+
+// ?demo=1 принудительно включает статический режим и удобен для локальной проверки.
+const FORCE_STATIC_DEMO = new URLSearchParams(location.search).has('demo');
+
+// API включён только для локального npm start. На Vercel сайт полностью статический.
+const API_ENABLED = ['localhost', '127.0.0.1', '::1'].includes(location.hostname)
+  && location.protocol !== 'file:'
+  && !FORCE_STATIC_DEMO;
+
+let PRODUCTS = STATIC_PRODUCTS;
 
 /* ---------- КАРТИНКА ТОВАРА (реальное фото) ---------- */
 function productArt(p) {
@@ -364,7 +421,7 @@ form.addEventListener('submit', async e => {
     return;
   }
 
-  // отправка заказа на сервер (POST /api/orders -> запись в БД)
+  // Локально заказ пишется в SQLite; на Vercel показывается безопасная демо-имитация.
   const submitBtn = form.querySelector('.checkout__submit');
   const prevText = submitBtn.textContent;
   submitBtn.disabled = true;
@@ -381,15 +438,28 @@ form.addEventListener('submit', async e => {
       },
       items: cart.map(i => ({ id: i.id, size: i.size, qty: i.qty })),
     };
-    const res = await fetch('/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
+    let data;
+    if (API_ENABLED) {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      data = await res.json();
+    } else {
+      data = {
+        ok: true,
+        order_no: 'DEMO-' + String(Date.now()).slice(-6),
+        total: cartTotal(),
+        demo: true,
+      };
+    }
 
     $('#orderNo').textContent = '#' + data.order_no;
+    $('#successMessage').textContent = data.demo
+      ? 'Это демонстрационный заказ — данные никуда не отправлялись.'
+      : 'Спасибо! Заказ сохранён в базе данных.';
     cart = [];
     saveCart();
     updateCartUI();
@@ -452,16 +522,20 @@ function toast(msg) {
 }
 
 /* ============================================================
-   СТАРТ — загрузка каталога с сервера (GET /api/products)
+   СТАРТ — статический каталог + локальная SQLite при npm start
    ============================================================ */
 async function init() {
-  try {
-    const res = await fetch('/api/products');
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    PRODUCTS = await res.json();
-  } catch (e) {
-    PRODUCTS = [];
-    gridEmpty.textContent = 'Не удалось загрузить каталог. Запусти сервер: npm start';
+  PRODUCTS = STATIC_PRODUCTS;
+
+  if (API_ENABLED) {
+    try {
+      const res = await fetch('/api/products');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const apiProducts = await res.json();
+      if (Array.isArray(apiProducts) && apiProducts.length) PRODUCTS = apiProducts;
+    } catch (e) {
+      console.warn('API недоступен, используется статический каталог.', e);
+    }
   }
   renderGrid();
   updateCartUI();
